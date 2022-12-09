@@ -1,0 +1,83 @@
+CREATE DATABASE QUERY;
+USE QUERY;
+
+CREATE TABLE SALES(SALESMAN_ID INT, PRIMARY KEY(SALESMAN_ID), NAME VARCHAR(20), CITY VARCHAR(20), COMMISSION FLOAT);
+INSERT INTO SALES VALUES(5001, 'JAMES HOOQ', 'NEW YORK', 0.15);
+INSERT INTO SALES VALUES(5002, 'NAIL KNITE', 'PARIS', 0.13);
+INSERT INTO SALES VALUES(5005, 'PIT ALEX', 'LONDON', 0.11);
+INSERT INTO SALES VALUES(5006, 'MC LAYON', 'PARIS', 0.14);
+INSERT INTO SALES VALUES(5003, 'LAUSON HEN', ' ', 0.12);
+INSERT INTO SALES VALUES(5007, 'PAUL ADAM', 'ROME', 0.13);
+SELECT * FROM SALES;
+
+
+CREATE TABLE CUSTOMER(CUST_ID INT, PRIMARY KEY(CUST_ID), CUST_NAME VARCHAR(20), CITY VARCHAR(20), GARDE INT, SALESMAN_ID INT ,FOREIGN KEY(SALESMAN_ID) REFERENCES SALES(SALESMAN_ID));
+INSERT INTO CUSTOMER VALUES(3002, 'NICK RIMANDO', 'NEW YORK', 100, 5001);
+INSERT INTO CUSTOMER VALUES(3005, 'GRAHAM ZUSI', 'CALIFORNIA', 200, 5002);
+INSERT INTO CUSTOMER VALUES(3001, 'BRAD GUZAN', 'LONDON', NULL, NULL);
+INSERT INTO CUSTOMER VALUES(3004, 'FABIAN JOHNS', 'PARIS', 300, 5006);
+INSERT INTO CUSTOMER VALUES(3007, 'BRAD DAVIS', 'NEW YORK', 200, 5001);
+INSERT INTO CUSTOMER VALUES(3009, 'GEOF CAMERO', 'BERLIN', 100, NULL);
+INSERT INTO CUSTOMER VALUES(3008, 'JULIAN GREEN ', 'LONDON', 300, 5002);
+INSERT INTO CUSTOMER VALUES(3003, 'JOZY ALTIDOR', 'MONCOW', 200, 5007);
+SELECT * FROM CUSTOMER;
+
+
+CREATE TABLE ORDER5(ORDER_NO INT   PRIMARY KEY, PURCH_AMT FLOAT, ORDER_DATE DATE, CUST_ID INT, FOREIGN KEY(CUST_ID) REFERENCES CUSTOMER(CUST_ID), SALESMAN_ID INT, FOREIGN KEY(SALESMAN_ID) REFERENCES SALES(SALESMAN_ID));
+INSERT INTO ORDER5 VALUES(70001, 150.5, '2016-10-05', 3005, 5002);
+INSERT INTO ORDER5 VALUES(70009, 270.65, '2016-09-10', 3001, NULL);
+INSERT INTO ORDER5 VALUES(70002, 65.26, '2016-10-05', 3002, 5001);
+INSERT INTO ORDER5 VALUES(70004, 110.5, '2016-08-17', 3009, NULL);
+INSERT INTO ORDER5 VALUES(70007, 948.5, '2016-09-10', 3005, 5002);
+INSERT INTO ORDER5 VALUES(70005, 2400.6, '2016-07-27', 3007, 5001);
+INSERT INTO ORDER5 VALUES(70008, 5760, '2016-09-10', 3002, 5001);
+INSERT INTO ORDER5 VALUES(70010, 1983.43,' 2016-10-10', 3004, 5006);
+INSERT INTO ORDER5 VALUES(70003, 2480.4, '2016-10-10', 3009, NULL);
+INSERT INTO ORDER5 VALUES(70012, 250.45, '2016-06-27', 3008, 5002);
+INSERT INTO ORDER5 VALUES(70011, 75.29, '2016-08-17', 3003, 5007);
+SELECT * FROM ORDER5;
+
+#Display name and commission of all the salesmen
+SELECT NAME,COMMISSION FROM SALES;
+
+#Retrieve salesman id of all salesmen from orders table without any repeats. 
+SELECT DISTINCT SALESMAN_ID FROM ORDER5;
+
+#Display names and city of salesman, who belongs to the city of Paris. 
+SELECT NAME,CITY FROM SALES WHERE CITY = 'PARIS';
+
+#Display all the information for those customers with a grade of 200
+SELECT * FROM CUSTOMER WHERE GARDE = 200;
+
+#Display the order number, order date and the purchase amount for order(s) which will be delivered by the salesman with ID 5001.
+SELECT ORDER_NO, ORDER_DATE, PURCH_AMT FROM ORDER5 WHERE SALESMAN_ID = 5001; 
+
+#Display all the customers, who are either belongs to the city New York or not had a grade above 100. 
+SELECT * FROM CUSTOMER WHERE CITY = 'NEW YORK' OR NOT GARDE > 100;
+
+#Find those salesmen with all information who gets the commission within a range of 0.12 and 0.14
+SELECT SALESMAN_ID, NAME, CITY FROM SALES WHERE (COMMISSION > 0.10 AND COMMISSION < 0.12);
+
+#Find all those customers with all information whose names are ending with the letter 'n'.
+SELECT * FROM CUSTOMER WHERE CUST_NAME LIKE '%N';
+
+ #Find those salesmen with all information whose name containing the 1st character is 'N' and the 4th character is 'l' and rests may be any character.
+ SELECT * FROM SALES WHERE NAME LIKE 'N__L%';
+ 
+# Find that customer with all information who does not get any grade except NULL
+SELECT * FROM CUSTOMER WHERE GARDE IS NULL;
+
+#Find the total purchase amount of all orders. 
+SELECT SUM(PURCH_AMT) FROM ORDER5;
+
+#Find the third highest grade for each of the cities of the customers. 
+
+
+# Find the second lowest purchase amount ordered by each customer with their ID and lowest purchase amount.
+SELECT MIN(PURCH_AMT),CUST_ID FROM ORDER5 WHERE PURCH_AMT NOT IN(SELECT MIN(PURCH_AMT) FROM ORDER5) GROUP BY CUST_ID;
+
+#Find the highest purchase amount ordered by the each customer on a particular date with their ID, order date and highest purchase amount. 
+SELECT MAX(PURCH_AMT) FROM ORDER5 GROUP BY CUST_ID, ORDER_DATE;
+
+#Find the highest purchase amount with their customer ID and order date, for only those customers who have the highest purchase amount in a day is more than 2000. 
+SELECT MAX(PURCH_AMT), CUST_ID FROM ORDER5 WHERE PURCH_AMT>2000 GROUP BY CUST_ID, ORDER_DATE;
